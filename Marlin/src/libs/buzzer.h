@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../inc/MarlinConfig.h"
+#include "../core/serial.h"
 
 #if HAS_BEEPER
 
@@ -134,3 +135,4 @@
 #define ERR_BUZZ() BUZZ(400, 40)
 #define OKAY_BUZZ() do{ BUZZ(100, 659); BUZZ(10); BUZZ(100, 698); }while(0)
 #define DONE_BUZZ(ok) do{ if (ok) OKAY_BUZZ(); else ERR_BUZZ(); }while(0)
+#define DEBU_BUZZ(S, V...) SERIAL_ECHOLNPGM(S); BUZZ(V);
