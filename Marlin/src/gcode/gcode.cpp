@@ -35,6 +35,7 @@ GcodeSuite gcode;
 #include "parser.h"
 #include "queue.h"
 #include "../module/motion.h"
+#include "../libs/buzzer.h"
 
 #if ENABLED(PRINTCOUNTER)
   #include "../module/printcounter.h"
@@ -344,11 +345,16 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
 
   // Handle a known command or reply "unknown command"
 
+  static uint8_t count = 0;
   switch (parser.command_letter) {
 
     case 'G': switch (parser.codenum) {
 
       case 0: case 1:                                             // G0: Fast Move, G1: Linear Move
+	if (parser.codenum == 0) { BUZZ(20, 3000); }
+        else if (!count) { BUZZ(20, 5000); count++; }
+        else if (count == 10) { count = 0; }
+        else { count++; }
         G0_G1(TERN_(HAS_FAST_MOVES, parser.codenum == 0)); break;
 
       #if ENABLED(ARC_SUPPORT)
@@ -544,7 +550,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
 
       case 31: M31(); break;                                      // M31: Report time since the start of SD print or last M109
 
-      #if ENABLED(DIRECT_PIN_CONTROL)
+      #if ENABLED(DIRECT_PIN_C	ONTROL)
         case 42: M42(); break;                                    // M42: Change pin state
       #endif
 
